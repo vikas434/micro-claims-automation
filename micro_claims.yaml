@@ -1,0 +1,31 @@
+root:
+  type: sequential
+  steps: [policy_check, vision_damage, fraud_screen, payout]
+
+agents:
+  policy_check:
+    runtime: python
+    entrypoint: agents/policy_check.py
+    tools:
+      - mcp_sql: { dsn: ${DB_DSN} }
+
+  vision_damage:
+    runtime: python
+    entrypoint: agents/vision_damage.py
+    tools:
+      - gemini_vision: { project: ${GCP_PROJECT} }
+
+  fraud_screen:
+    runtime: python
+    entrypoint: agents/fraud_screen.py
+    tools:
+      - weaviate: { url: ${WEAVIATE_URL} }
+
+  payout:
+    runtime: python
+    entrypoint: agents/payout.py
+    tools:
+      - payments_rest: { base_url: https://payments.internal }
+
+
+
